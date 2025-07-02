@@ -1,5 +1,5 @@
 import { reactive } from "../reactive";
-import { effect } from "../effect";
+import { effect,stop } from "../effect";
 
 describe('effect', () => {
 
@@ -78,4 +78,20 @@ describe('effect', () => {
     runner();
     expect(dummy).toBe(3);
   });
+
+  it("onStop", () => {
+    const obj = reactive({ prop: 1 });
+    const onStop = jest.fn();
+    let dummy;
+    const runner = effect(() => {
+      dummy = obj.prop;
+    }, {
+      onStop
+    });
+    stop(runner);
+    expect(onStop).toHaveBeenCalledTimes(1);
+  });
+
 });
+
+
