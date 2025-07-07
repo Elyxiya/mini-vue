@@ -72,7 +72,10 @@ describe('effect', () => {
     obj.prop = 2;
     expect(dummy).toBe(2);
     stop(runner);
-    obj.prop = 3;
+    //obj.prop = 3;
+    // get set
+    // obj.prop = obj.prop+1 =>触发了get 操作，又重新依赖收集了
+    obj.prop++
     expect(dummy).toBe(2);
 
     runner();
