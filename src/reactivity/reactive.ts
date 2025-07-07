@@ -1,4 +1,4 @@
-import { mutableHandlers, readonlyHandlers } from "./baseHandler";
+import { mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from "./baseHandler";
 
 //用枚举类 reactiveFlags 来表示
 export const enum ReactiveFlags {
@@ -48,6 +48,9 @@ export function readonly(raw){
   // })
 }
 
+export function shallowReadonly(raw) {
+  return createActiveObject(raw,shallowReadonlyHandlers); 
+}
 export function isReactive(value) {
   return !!value[ReactiveFlags.IS_REACTIVE];
 }
