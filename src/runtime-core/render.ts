@@ -2,13 +2,20 @@ import { createComponentInstance, setupComponent } from "./component";
 
 export function render(vnode, container) { 
   //path
+
+  
   patch(vnode, container)
 }
 
 function patch (vnode, container){
   //处理组件
 
-  // 判断 是不是 element类型
+  // TODO 判断vnode 是不是一个element
+  // 是 element 那么就处理element
+  // 如何分辨 element 和 component
+  // processElement(vnode, container);
+
+
   processComponent(vnode, container);
 }
 
