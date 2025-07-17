@@ -37,7 +37,8 @@ function processElement(vnode: any, container: any) {
 }
 
 function mountElement(vnode: any, container: any) {
-    const el = document.createElement(vnode.type);
+    // vnode -> element -> div
+    const el = (vnode.el = document.createElement(vnode.type)) ;
    
     // string array
     const { children } = vnode;
@@ -68,21 +69,25 @@ function processComponent(vnode: any, container: any) {
   mountComponent(vnode,container)
 }
 
-function mountComponent(vnode: any,container: any) { 
+function mountComponent(initialVnode: any,container: any) { 
   // 创建组件实例
-  const instance = createComponentInstance(vnode);
+  const instance = createComponentInstance(initialVnode);
 
   setupComponent(instance);
 
-  setupRenderEffect(instance,container);
+  setupRenderEffect(instance,initialVnode,container);
 }
 
-function setupRenderEffect(instance:any, container: any) {
-   const subTree = instance.render();
+function setupRenderEffect(instance:any,initialVnode,container: any) {
+  const { proxy } = instance;
+  const subTree = instance.render.call(proxy);
 
    // vnode -> patch
    // vnode -> element -> mountElement
 
    patch(subTree, container);
+
+   // element -> mount
+   initialVnode.el = subTree.el;
 }
 
