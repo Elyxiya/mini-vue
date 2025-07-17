@@ -7,7 +7,15 @@ export const App = {
   //render
   render() {
     //ui
-    return h('div', "hi," + this.msg)
+    return h('div', {
+      id: "app",
+      class: ["red", "hard"],
+    },
+    // srting
+    //"hi,mini-vue" 
+    // Array
+    [h('p', { class: "red" }, "hi"), h('p', { class: "blue" }, "mini-vue")]
+    );
   },
 
   setup(){
