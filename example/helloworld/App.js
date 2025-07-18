@@ -12,6 +12,13 @@ export const App = {
     return h('div', {
       id: "root",
       class: ["red", "hard"],
+      onClick() {
+        console.log("click");
+      },
+      onMousedown() { 
+        console.log("mousedown");
+      },
+
     },
     // this.$el -> get root element
     // setupState

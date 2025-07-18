@@ -60,7 +60,18 @@ function mountElement(vnode: any, container: any) {
     const { props } = vnode;
     for (const key in props) {
       const value = props[key];
-      el.setAttribute(key, value);
+      console.log(key);
+
+      const isOn = (key: string) => /^on[A-Z]/.test(key);
+      if( isOn(key) ) {
+        // 具体 click
+        // el.addEventListener("click", value);
+        const even = key.slice(2).toLowerCase();
+        el.addEventListener(even, value);
+      }else{
+        el.setAttribute(key, value);
+      }
+      
     }
      container.append(el);
 }

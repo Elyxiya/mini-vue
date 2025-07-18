@@ -9,7 +9,7 @@ export function createVNode(type, props?, children?) {
     el: null,
   };
 
-  debugger
+  
   // children
   if (typeof children === 'string') {
     vnode.shapeFlag |= ShapeFlags.TEXT_CHILDREN;
