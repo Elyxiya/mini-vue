@@ -1,3 +1,4 @@
+import { isObject } from "../shared/index";
 import { mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from "./baseHandler";
 
 //用枚举类 reactiveFlags 来表示
@@ -62,5 +63,9 @@ export function isProxy(value) {
   return isReactive(value) || isReadonly(value);
 }
 function createActiveObject(raw:any, baseHandler) {
+  if (!isObject(raw)) {
+    console.warn(`target ${raw} is not an object`);
+    return raw;
+  }
   return new Proxy(raw, baseHandler);
 }
