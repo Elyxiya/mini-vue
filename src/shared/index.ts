@@ -11,3 +11,18 @@ export function hasChanged(val, newValue) {
 export function hasOwn(val, key) {
   return Object.prototype.hasOwnProperty.call(val, key);
 }
+
+// add-foo -> addFoo 驼峰命名法
+export const camelize = (str: string) => {
+  return str.replace(/-(\w)/g, (_, c) => {
+    return c ? c.toUpperCase() : "";
+  });
+};
+// add -> Add
+const capitalize = (str: string) => {
+return str.charAt(0).toUpperCase() + str.slice(1);
+};
+// Add -> onAdd
+export const toHandlerKey = (str: string) => {
+return str ? 'on' + capitalize(str) : '';
+};
