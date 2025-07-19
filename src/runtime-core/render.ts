@@ -1,6 +1,7 @@
 import { ShapeFlags } from "../shared/ShapFlags";
 import { isObject } from "../shared/index";
 import { createComponentInstance, setupComponent } from "./component";
+import { Fragment, Text } from "./vnode";
 
 export function render(vnode, container) { 
   //path
@@ -14,26 +15,43 @@ function patch (vnode, container){
 
   //ShapFlags
   // vnode -> flag
-  const { shapeFlag } = vnode;
+  const { type, shapeFlag } = vnode;
   // TODO 判断vnode 是不是一个element
   // 是 element 那么就处理element
   // 如何分辨 element 和 component
   
-  // STATEFUL_COMPONENT -> 带状态的组件
-  if (shapeFlag & ShapeFlags.ELEMENT) {
-    // element
-    processElement(vnode, container);
-    return;
+  // Fragment -> 只渲染 children
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container);
+      break;
+    case Text: 
+      processText(vnode, container);
+      break;
+    default:
+      // STATEFUL_COMPONENT -> 带状态的组件
+      if (shapeFlag & ShapeFlags.ELEMENT) {
+        // element
+        processElement(vnode, container);
+      }
+      else if ( shapeFlag & ShapeFlags.STATEFUL_COMPONENT ) {
+        // component
+        processComponent(vnode, container)
+      }
+      break;
   }
-  else if ( shapeFlag & ShapeFlags.STATEFUL_COMPONENT ) {
-    // component
-    processComponent(vnode, container)
-    return;
-  }
-
-  ;
 }
 
+function processFragment(vnode: any, container: any) {
+   // Implement
+   mountChildren(vnode, container);
+}
+
+function processText(vnode: any, container: any) {
+  const { children } = vnode;
+  const textNode = (vnode.el = document.createTextNode(children));
+  container.append(textNode);
+}
 
 
 function processElement(vnode: any, container: any) {
@@ -107,4 +125,5 @@ function setupRenderEffect(instance:any,initialVnode,container: any) {
    // element -> mount
    initialVnode.el = subTree.el;
 }
+
 
