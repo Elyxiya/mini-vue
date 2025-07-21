@@ -1,12 +1,23 @@
 import { ShapeFlags } from "../shared/ShapFlags";
 import { isObject } from "../shared/index";
 import { createComponentInstance, setupComponent } from "./component";
+import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
-export function render(vnode, container) { 
-  //path
-  patch(vnode, container,null)
-}
+
+export function createRenderer(options) {
+   
+ const { 
+  createElement: hostCreateElement, 
+  patchProp: hostPatchProp, 
+  insert: hostInsert 
+} = options;
+
+ function render(vnode, container) { 
+    patch(vnode, container,null)
+  }
+
+
 
 function patch (vnode, container, parentComponent){
   //处理组件
@@ -14,10 +25,7 @@ function patch (vnode, container, parentComponent){
   //ShapFlags
   // vnode -> flag
   const { type, shapeFlag } = vnode;
-  // TODO 判断vnode 是不是一个element
-  // 是 element 那么就处理element
-  // 如何分辨 element 和 component
-  
+
   // Fragment -> 只渲染 children
   switch (type) {
     case Fragment:
@@ -57,8 +65,11 @@ function processElement(vnode: any, container: any, parentComponent) {
 }
 
 function mountElement(vnode: any, container: any, parentComponent) {
-    // vnode -> element -> div
-    const el = (vnode.el = document.createElement(vnode.type)) ;
+  //canvs
+
+  
+  // vnode -> element -> div
+    const el = (vnode.el =  hostCreateElement(vnode.type)) ;
    
     // string array
     const { children,shapeFlag } = vnode;
@@ -76,20 +87,16 @@ function mountElement(vnode: any, container: any, parentComponent) {
     const { props } = vnode;
     for (const key in props) {
       const value = props[key];
-      console.log(key);
-
-      const isOn = (key: string) => /^on[A-Z]/.test(key);
-      if( isOn(key) ) {
-        // 具体 click
-        // el.addEventListener("click", value);
-        const even = key.slice(2).toLowerCase();
-        el.addEventListener(even, value);
-      }else{
-        el.setAttribute(key, value);
-      }
+    
+      hostPatchProp(el, key, value);
       
     }
-     container.append(el);
+
+    // canvs
+    // el.x = 10
+    // container.append(el);
+    // addChild()
+    hostInsert(el, container)
 }
 
 function mountChildren(vnode, container, parentComponent) {
@@ -124,4 +131,8 @@ function setupRenderEffect(instance:any,initialVnode,container: any) {
    initialVnode.el = subTree.el;
 }
 
+  return {
+    createApp: createAppAPI(render)
+  }
+}
 

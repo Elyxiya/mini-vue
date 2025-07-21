@@ -1,8 +1,10 @@
-import { render } from "./render";
 import { createVNode } from "./vnode";
-export function createApp(rootComponent) {
-   return {
-       mount(rootContainer) {
+
+// render
+export function createAppAPI(render) {
+   return function createApp(rootComponent) {
+      return {
+         mount(rootContainer) {
         // 1. 创建 vnode
         // component -> vnode
         // 所有逻辑操作 都会基于vnode 做处理
@@ -10,6 +12,9 @@ export function createApp(rootComponent) {
 
        render(vnode, rootContainer);
       },
+      }
    }
 }
+
+
 
