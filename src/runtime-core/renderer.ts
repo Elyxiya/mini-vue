@@ -152,7 +152,7 @@ function patchKeyedChildren(c1, c2, container, parentComponent, parentAnchor) {
   // 3. 新的比老的长
   if(i > e1) { 
     if(i <= e2) { 
-      debugger;
+      
       const nextPos = e2 + 1;
       const anchor = nextPos < l2 ?  c2[nextPos].el : null;
       while(i <= e2) { 
@@ -167,14 +167,19 @@ function patchKeyedChildren(c1, c2, container, parentComponent, parentAnchor) {
       i++;
     }
   } else {
-    // 中间对比
+    // 5.中间对比
      let s1 = i;
      let s2 = i;
 
      const toBePatched = e2 - s2 + 1;
      let patched = 0;
      const keyToNewIndexMap = new Map();
-
+     const newIndexToOldIndexMap = new Array(toBePatched)
+     let moved = false;
+     let maxNewIndexSoFar = 0;
+     for(let i = 0;i < toBePatched;i++) {
+      newIndexToOldIndexMap[i] = 0;
+     }
      for(let i = s2; i <= e2; i++) { 
       const nextChild = c2[i];
       keyToNewIndexMap.set(nextChild.key, i)
@@ -203,10 +208,47 @@ function patchKeyedChildren(c1, c2, container, parentComponent, parentAnchor) {
         // 删除
         hostRemove(prevChild.el)
       } else { 
+        if(newIndex >= maxNewIndexSoFar){
+           maxNewIndexSoFar = newIndex;
+        } else {
+          moved = true;
+        }
+        newIndexToOldIndexMap[newIndex - s2] = i + 1;
+
+
         patch(prevChild, c2[newIndex], container, parentComponent, null)
         patched++;
       }
      }
+
+     // 5.2 最长递增子序列 -> 移动
+     const increasingNewIndexSequence = moved
+     ? getSequence(newIndexToOldIndexMap)
+     : [];
+     let j = increasingNewIndexSequence.length - 1;
+     for(let i = toBePatched - 1; i >= 0; i--) { 
+      const nextIndex = i + s2;
+      const nextChild = c2[nextIndex];
+      const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : null;
+      
+      if(newIndexToOldIndexMap[i] === 0) { 
+        patch(null, nextChild, container, parentComponent, anchor);
+      } else if(moved) { 
+        if(j < 0 || i !== increasingNewIndexSequence[j]) {
+         hostInsert(nextChild.el, container, anchor);
+        } else {
+          j--;
+        }
+      }
+      if(moved) {
+        if(j < 0 || i !== increasingNewIndexSequence[j]){
+          console.log('移动位置')
+          hostInsert(nextChild.el, container, anchor);
+        }else {
+          j--;
+        }
+      }
+    }
   }
 
 }
@@ -328,5 +370,46 @@ function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
   return {
     createApp: createAppAPI(render)
   }
+}
+
+function getSequence(arr: number[]): number[] {
+  const p = arr.slice();
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i];
+    if (arrI !== 0) {
+      j = result[result.length - 1];
+      if (arr[j] < arrI) {
+        p[i] = j;
+        result.push(i);
+        continue;
+      }
+      u = 0;
+      v = result.length - 1;
+      while (u < v) {
+        c = (u + v) >> 1;
+        if (arr[result[c]] < arrI) {
+          u = c + 1;
+        } else {
+          v = c;
+        }
+      }
+      if (arrI < arr[result[u]]) {
+        if (u > 0) {
+          p[i] = result[u - 1];
+        }
+        result[u] = i;
+      }
+    }
+  }
+  u = result.length;
+  v = result[u - 1];
+  while (u-- > 0) {
+    result[u] = v;
+    v = p[v];
+  }
+  return result;
 }
 
