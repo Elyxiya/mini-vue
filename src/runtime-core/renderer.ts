@@ -2,6 +2,7 @@ import { effect } from "../reactivity/effect";
 import { ShapeFlags } from "../shared/ShapFlags";
 import { EMPTY_OBJ, isObject } from "../shared/index";
 import { createComponentInstance, setupComponent } from "./component";
+import { shouldUpdateComponent } from "./componentUpdateUtils";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
@@ -324,13 +325,45 @@ function mountChildren(children, container, parentComponent, anchor) {
   });
 }
 
-function processComponent(n1, n2: any, container: any, parentComponent, anchor) { 
-  mountComponent(n2,container, parentComponent, anchor)
+function processComponent(
+  n1, 
+  n2: any, 
+  container: any, 
+  parentComponent, 
+  anchor) { 
+  if(!n1) { 
+    // mount
+    mountComponent(n2,container, parentComponent, anchor)
+    
+  } else { 
+    // update
+    // n1 -> n2
+    updateComponent(n1, n2)
+  }
+
+}
+function updateComponent(n1, n2) { 
+  // 更新组件实例引用
+  const instance = (n2.component = n1.component);
+  if(shouldUpdateComponent(n1, n2)){
+   
+    instance.next = n2;
+    instance.update();
+  } else {
+    n2.component = n1.component
+    n2.el = n1.el;
+    instance.vnode = n2;
+  }
 }
 
-function mountComponent(initialVnode: any,container: any, parentComponent, anchor) { 
+function mountComponent(
+  initialVnode: any,
+  container: any, 
+  parentComponent, 
+  anchor
+  ) { 
   // 创建组件实例
-  const instance = createComponentInstance(initialVnode, parentComponent);
+  const instance = initialVnode.component = createComponentInstance(initialVnode, parentComponent);
 
   setupComponent(instance);
 
@@ -339,7 +372,7 @@ function mountComponent(initialVnode: any,container: any, parentComponent, ancho
 
 function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
   // 依赖收集，更新节点树
-  effect(() => { 
+  instance.update = effect(() => { 
 
     if(!instance.isMounted) { 
       console.log('init');
@@ -354,6 +387,14 @@ function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
     } else { 
       // 更新逻辑
       console.log('update');
+      // 需要一个vnode
+      const { next, vnode } = instance;
+      if(next){
+        next.el = vnode.el;
+
+        updateComponentPreRender(instance, next);
+      }
+
       const { proxy } = instance;
       // 生成vnode节点
       const subTree = instance.render.call(proxy);
@@ -370,6 +411,12 @@ function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
   return {
     createApp: createAppAPI(render)
   }
+}
+
+function updateComponentPreRender(instance, nextVNode) {
+  instance.vnode = nextVNode;
+  instance.next = null;
+  instance.props = nextVNode.props;
 }
 
 function getSequence(arr: number[]): number[] {
