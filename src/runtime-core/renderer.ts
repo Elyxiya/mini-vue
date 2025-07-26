@@ -4,6 +4,7 @@ import { EMPTY_OBJ, isObject } from "../shared/index";
 import { createComponentInstance, setupComponent } from "./component";
 import { shouldUpdateComponent } from "./componentUpdateUtils";
 import { createAppAPI } from "./createApp";
+import { queueJobs } from "./scheduler";
 import { Fragment, Text } from "./vnode";
 
 
@@ -403,6 +404,12 @@ function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
 
 
       patch(prevSubTree, subTree, container, instance, anchor);
+    }
+  },
+  {
+    sheduler() {
+      console.log('更新-scheduler');
+      queueJobs(instance.update);
     }
   })
  
