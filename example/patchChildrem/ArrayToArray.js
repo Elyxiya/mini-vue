@@ -119,6 +119,7 @@ import { ref, h } from "../../lib/guide-mini-vue.esm.js";
 //   h("p", { key: "C", id: "c-prev" }, "C"),
 //   h("p", { key: "E" }, "E"),
 //   h("p", { key: "D" }, "D"),
+-> 
 //   h("p", { key: "F" }, "F"),
 //   h("p", { key: "G" }, "G"),
 // ];
