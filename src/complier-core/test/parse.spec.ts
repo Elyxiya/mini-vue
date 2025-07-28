@@ -29,4 +29,17 @@ describe('Parse', () => {
       })
     })
   });
+ // 解析text
+ describe('text',() => { 
+  it('simple text', () => { 
+    const ast = baseParse("hello world");
+
+    // root
+    expect(ast.children[0]).toStrictEqual({
+      type: NodeTypes.TEXT,
+      content: "hello world",
+    })
+  })
+});
+
 })

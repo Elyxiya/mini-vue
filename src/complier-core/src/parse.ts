@@ -15,12 +15,20 @@ function parseChildren(context) {
   const nodes: any = [];
   let node;
   const s = context.source;
+  // 插值
   if(s.startsWith("{{")) {
      node = parseInterpolation(context);
-  } else if(s[0] === "<") {
+
+  } 
+  // 元素
+  else if(s[0] === "<") {
     if(/[a-z]/i.test(s[1])){
       node = parseElement(context);
     }
+  }
+  // 文本
+  if(!node) {
+    node = parseText(context);
   }
  
   
@@ -28,6 +36,26 @@ function parseChildren(context) {
   
    return nodes;
 };
+
+function parseText(context: any) { 
+  // 1. 获取内容
+  const content = parseTextData(context, context.source.length);
+
+  // 2. 删除处理完成的代码
+  advanceBy(context, context.length);
+
+   return {
+     type: NodeTypes.TEXT,
+     content,
+   }
+}
+
+function parseTextData(context: any, length) { 
+  const content = context.source.slice(0, length)
+  
+  advanceBy(context,length);
+  return content;
+}
 
 function parseElement(context: any) { 
    const element = parseTag(context, TagType.Start);
@@ -65,10 +93,10 @@ function parseInterpolation(context: any) {
 
     const rawContentLength = closeIndex - openDelimiter.length;
 
-    const rawContent = context.source.slice(0, rawContentLength);
+    const rawContent = parseTextData(context, rawContentLength);
     const content = rawContent.trim();
 
-    advanceBy(context, rawContentLength + closeDelimiter.length)
+    advanceBy(context, closeDelimiter.length)
 
 
     return  {
