@@ -1,0 +1,5 @@
+{
+  "jest.monitorLongRun": "",
+  "jest.runMode": null,
+  "jest.runMode": "on-demand"
+}
