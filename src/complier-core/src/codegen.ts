@@ -59,7 +59,6 @@ function genNode(node:any, context ){
          genExpression(node, context)
          break;
       default:
-         
          break;
    }
   
@@ -79,5 +78,5 @@ function genInterpolation(node: any, context: any){
 
 function genText(node:any, context ){
    const { push } = context;
-   push(`${node.content}`)
+   push(`'${node.content}'`)
 }

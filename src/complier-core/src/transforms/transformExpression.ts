@@ -7,6 +7,8 @@ export function transformExpression(node) {
 }
 
 function processExpression(node: any) {
+
   node.content = `_ctx.${node.content}`;
+
   return node;
 }

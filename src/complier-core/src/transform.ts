@@ -40,11 +40,14 @@ function traverseNode (node: any, context: any) {
       break;
     case NodeTypes.ROOT:
     case NodeTypes.ElEMENT:
+ 
       traverseChildren(node, context);
+
+      break;
     default:
       break;
   }
-  traverseChildren(node, context);
+
 }
 
 function traverseChildren(node: any, context: any) { 
