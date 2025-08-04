@@ -5,6 +5,9 @@ export function isObject(val) {
   return val !== null && typeof val === "object";
 }
 
+export function isString(val) {
+  return typeof val === "string";
+}
 export function hasChanged(val, newValue) {
   return !Object.is(val, newValue);
 }

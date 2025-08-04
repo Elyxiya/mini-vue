@@ -124,7 +124,7 @@ function parseTag(context: any, type: TagType) {
 
    if(type === TagType.End) return;
    return {
-     type: NodeTypes.ElEMENT,
+     type: NodeTypes.ELEMENT,
      tag,
    }
 }
