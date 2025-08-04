@@ -379,7 +379,7 @@ function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
       console.log('init');
       const { proxy } = instance;
       // 生成vnode节点
-      const subTree = (instance.subTree = instance.render.call(proxy));
+      const subTree = (instance.subTree = instance.render.call(proxy, proxy));
       console.log(subTree)
       patch(null, subTree, container, instance, anchor);
        // element -> mount
@@ -398,7 +398,7 @@ function setupRenderEffect(instance:any,initialVnode,container: any, anchor) {
 
       const { proxy } = instance;
       // 生成vnode节点
-      const subTree = instance.render.call(proxy);
+      const subTree = instance.render.call(proxy, proxy);
       const prevSubTree = instance.subTree;
       instance.subTree = subTree;
 

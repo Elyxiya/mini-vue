@@ -24,7 +24,7 @@ describe('Parse', () => {
 
       // root
       expect(ast.children[0]).toStrictEqual({
-        type: NodeTypes.ElEMENT,
+        type: NodeTypes.ELEMENT,
         tag: "div",
         children: []
       })
@@ -47,7 +47,7 @@ describe('Parse', () => {
 test("hello world",() => {
   const ast = baseParse("<div>hi,{{message}}</div>");
   expect(ast.children[0]).toStrictEqual({
-    type: NodeTypes.ElEMENT,
+    type: NodeTypes.ELEMENT,
     tag: "div",
     children: [
       {
@@ -69,11 +69,11 @@ test("nested element",() => {
   const ast = baseParse("<div><p>hi</p>{{message}}</div>");
  
   expect(ast.children[0]).toStrictEqual({
-    type: NodeTypes.ElEMENT,
+    type: NodeTypes.ELEMENT,
     tag: "div",
     children: [
      {
-      type: NodeTypes.ElEMENT,
+      type: NodeTypes.ELEMENT,
       tag: "p",
       children: [
         {
